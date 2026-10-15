@@ -1,0 +1,13 @@
+
+{
+  "appId": "com.agriwater.app",
+  "appName": "AgriWater",
+  "webDir": "www",
+  "plugins": {
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "LIGHT",
+      "backgroundColor": "#f5f8f6"
+    }
+  }
+}

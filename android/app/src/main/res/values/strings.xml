@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AgriWater</string>
+    <string name="title_activity_main">AgriWater</string>
+    <string name="package_name">com.agriwater.app</string>
+    <string name="custom_url_scheme">com.agriwater.app</string>
+</resources>

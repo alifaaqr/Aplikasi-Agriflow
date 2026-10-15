@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriWater</title>
+
+<style>
+:root {
+  --green: #176b4d;
+  --green-light: #eaf5ef;
+  --bg: #f5f8f6;
+  --text: #18352b;
+  --muted: #71827b;
+  --border: #e2ebe6;
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #dfe8e3;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+}
+
+.app {
+  width: min(430px, 100vw);
+  min-height: 100vh;
+  margin: auto;
+  background: var(--bg);
+  position: relative;
+}
+
+header {
+  padding: 26px 22px 14px;
+}
+
+header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+header p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+main {
+  padding: 0 18px 90px;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  margin: 12px 0;
+  box-shadow: 0 4px 18px rgba(34, 70, 54, 0.04);
+}
+
+.hero {
+  background: linear-gradient(135deg, #e5f5eb, #f8fcfa);
+  border: none;
+  padding: 20px;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.big {
+  font-size: 34px;
+  line-height: 1.05;
+  font-weight: 800;
+}
+
+.unit {
+  font-size: 14px;
+  color: var(--muted);
+  margin-left: 3px;
+}
+
+.value {
+  font-weight: 750;
+  font-size: 14px;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--green-light);
+  color: var(--green);
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9aa9a2;
+  flex-shrink: 0;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metric {
+  padding: 15px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-width: 0;
+}
+
+.metric b {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 750;
+  margin: 22px 2px 8px;
+}
+
+.info {
+  background: #edf6fb;
+  color: #376b8f;
+  border-radius: 14px;
+  padding: 13px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.field {
+  margin: 14px 0;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--text);
+  background: white;
+}
+
+.tabs {
+  position: fixed;
+  bottom: 0;
+  width: min(430px, 100vw);
+  height: 70px;
+  background: white;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 5;
+}
+
+.tab {
+  border: none;
+  background: none;
+  color: #80918a;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 80px;
+}
+
+.tab span {
+  font-size: 20px;
+}
+
+.tab.active {
+  color: var(--green);
+  font-weight: bold;
+}
+
+@media (max-width: 350px) {
+  .big {
+    font-size: 28px;
+  }
+
+  .metric b {
+    font-size: 17px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+  <h1 id="title">Beranda</h1>
+  <p id="subtitle">Pantau pemakaian air PDAM</p>
+</header>
+
+<main>
+
+<!-- HALAMAN BERANDA -->
+<section id="home" class="screen active">
+
+  <div class="card hero">
+    <div class="label">Status aliran air</div>
+
+    <div class="row">
+      <span class="status">
+        <i class="dot" id="flowDot"></i>
+        <span id="flowStatus">Belum ada aliran</span>
+      </span>
+    </div>
+
+    <p class="small" style="margin-bottom:0">
+      Status aliran mengikuti pembacaan flow meter
+      setelah sistem terhubung.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="label">Konsumsi air hari ini</div>
+
+    <div class="row">
+      <div>
+        <span class="big" id="todayUsage">0</span>
+        <span class="unit">L</span>
+      </div>
+
+      <div style="text-align:right">
+        <div class="value" id="flowRate">0 L/min</div>
+        <div class="small">Debit saat ini</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="metric">
+      <div class="label">Pemakaian bulan ini</div>
+      <b id="monthUsage">0 L</b>
+      <span>Total bulan berjalan</span>
+    </div>
+
+    <div class="metric">
+      <div class="label">Estimasi biaya</div>
+      <b id="estimatedCost">Rp 0</b>
+      <span>Perkiraan sementara</span>
+    </div>
+  </div>
+
+  <!-- FORM TARIF PDAM LANGSUNG DI BERANDA -->
+  <div class="section-title">Tarif air PDAM</div>
+
+  <div class="card">
+    <div class="field">
+      <label for="tariff">Masukkan tarif PDAM per m³ (Rp)</label>
+
+      <input
+        id="tariff"
+        type="number"
+        min="0"
+        step="100"
+        value="0"
+        placeholder="Contoh: 5000"
+        oninput="updateCost()"
+      >
+    </div>
+
+    <div class="row">
+      <div>
+        <div class="label">Tarif yang dimasukkan</div>
+        <div class="value" id="tariffLabel">Rp 0</div>
+      </div>
+
+      <div style="text-align:right">
+        <div class="label">Pemakaian bulan ini</div>
+        <div class="value" id="monthM3">0 m³</div>
+      </div>
+    </div>
+
+    <div style="margin-top:15px">
+      <div class="label">Estimasi biaya pemakaian</div>
+      <div class="big" id="costDetail">Rp 0</div>
+    </div>
+
+    <p class="small">
+      Masukkan tarif sesuai daerah dan golongan pelanggan
+      pada tagihan PDAM. Estimasi ini belum mencakup biaya
+      administrasi, pajak, biaya minimum, atau tarif progresif.
+    </p>
+  </div>
+
+  <!-- RINGKASAN -->
+  <div class="section-title">Ringkasan pemakaian</div>
+
+  <div class="card list">
+    <div class="list-item">
+      <div>
+        <div class="value">Hari ini</div>
+        <div class="small">Volume air terpakai</div>
+      </div>
+      <div class="value" id="todaySummary">0 L</div>
+    </div>
+
+    <div class="list-item">
+      <div>
+        <div class="value">7 hari terakhir</div>
+        <div class="small">Total pemakaian</div>
+      </div>
+      <div class="value" id="weekUsage">0 L</div>
+    </div>
+
+    <div class="list-item">
+      <div>
+        <div class="value">Bulan ini</div>
+        <div class="small">Total pemakaian</div>
+      </div>
+      <div class="value" id="monthSummary">0 L</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- HALAMAN RIWAYAT -->
+<section id="history" class="screen">
+
+  <div class="card">
+    <div class="label">Riwayat konsumsi</div>
+    <div class="value">Pemakaian air per hari</div>
+
+    <p class="small">
+      Belum ada riwayat pemakaian. Data akan muncul setelah
+      sistem terhubung dan mulai merekam pembacaan flow meter.
+    </p>
+  </div>
+
+  <div class="card list" id="historyList">
+    <div class="small">Belum ada data riwayat.</div>
+  </div>
+
+</section>
+
+</main>
+
+<!-- NAVIGASI BAWAH -->
+<nav class="tabs">
+
+  <button
+    class="tab active"
+    data-screen="home"
+    onclick="showScreen('home')"
+  >
+    <span>⌂</span>
+    Beranda
+  </button>
+
+  <button
+    class="tab"
+    data-screen="history"
+    onclick="showScreen('history')"
+  >
+    <span>◷</span>
+    Riwayat
+  </button>
+
+</nav>
+
+</div>
+
+<script>
+const titles = {
+  home: ["Beranda", "Pantau pemakaian air PDAM"],
+  history: ["Riwayat Konsumsi", "Lihat pemakaian air harian"]
+};
+
+// Semua data pemakaian dan debit dimulai dari nol.
+// Nilai ini nantinya dapat diganti dengan data aktual flow meter.
+const usage = {
+  today: 0,
+  week: 0,
+  month: 0,
+  flowRate: 0
+};
+
+function formatNumber(value, decimals = 0) {
+  return Number(value).toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals
+  });
+}
+
+function formatRupiah(value) {
+  return "Rp " + Math.round(value).toLocaleString("id-ID");
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+
+  document.getElementById("title").textContent = titles[id][0];
+  document.getElementById("subtitle").textContent = titles[id][1];
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.screen === id);
+  });
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+function updateCost() {
+  const tariffInput = document.getElementById("tariff");
+
+  const tariff = Math.max(
+    0,
+    Number(tariffInput.value) || 0
+  );
+
+  // Konversi liter ke meter kubik.
+  const monthM3 = usage.month / 1000;
+
+  // Estimasi sederhana: pemakaian (m³) × tarif per m³.
+  const cost = monthM3 * tariff;
+
+  document.getElementById("todayUsage").textContent =
+    formatNumber(usage.today);
+
+  document.getElementById("todaySummary").textContent =
+    formatNumber(usage.today) + " L";
+
+  document.getElementById("weekUsage").textContent =
+    formatNumber(usage.week) + " L";
+
+  document.getElementById("monthUsage").textContent =
+    formatNumber(usage.month) + " L";
+
+  document.getElementById("monthSummary").textContent =
+    formatNumber(usage.month) + " L";
+
+  document.getElementById("flowRate").textContent =
+    formatNumber(usage.flowRate, 2) + " L/min";
+
+  document.getElementById("monthM3").textContent =
+    formatNumber(monthM3, 3) + " m³";
+
+  document.getElementById("tariffLabel").textContent =
+    formatRupiah(tariff);
+
+  document.getElementById("estimatedCost").textContent =
+    formatRupiah(cost);
+
+  document.getElementById("costDetail").textContent =
+    formatRupiah(cost);
+
+  const isFlowing = usage.flowRate > 0;
+
+  document.getElementById("flowStatus").textContent =
+    isFlowing ? "Mengalir" : "Belum ada aliran";
+
+  document.getElementById("flowDot").style.background =
+    isFlowing ? "#27a36d" : "#9aa9a2";
+}
+
+updateCost();
+</script>
+
+</body>
+
